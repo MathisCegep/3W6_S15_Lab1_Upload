@@ -9,8 +9,12 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<ZombiePartyDbContext>(options =>
 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")).UseLazyLoadingProxies());
 
+// TOASTNOTIFICATION
+builder.Services.AddNotyf();
 
 var app = builder.Build();
+
+
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -26,6 +30,9 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthorization();
+
+// TOASTNOTIFICATION
+app.UseNotyf(); // shows toasts raised during fetch / AJAX / htmx calls
 
 app.MapControllerRoute(
     name: "default",

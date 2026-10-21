@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AspNetCoreHero.ToastNotification.Abstractions;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ZombieParty.Models;
 using ZombieParty.Models.Data;
+using ZombieParty.Models.Utility;
 using ZombieParty.ViewModels;
 
 namespace ZombieParty.Controllers
@@ -10,10 +12,12 @@ namespace ZombieParty.Controllers
     public class ZombieTypeController : Controller
     {
         private ZombiePartyDbContext _baseDonnees { get; set; }
+        private readonly INotyfService _notifyService; //TOASTNOTIFICATION
 
-        public ZombieTypeController(ZombiePartyDbContext baseDonnees)
+        public ZombieTypeController(ZombiePartyDbContext baseDonnees, INotyfService notifyService)
         {
             _baseDonnees = baseDonnees;
+            _notifyService = notifyService; //TOASTNOTIFICATION
         }
 
         public async Task<IActionResult> Index()
@@ -57,7 +61,7 @@ namespace ZombieParty.Controllers
                 // Ajouter à la BD
                await  _baseDonnees.ZombieTypes.AddAsync(zombieType);
                 _baseDonnees.SaveChanges();
-                TempData["Success"] = $"{zombieType.TypeName} zombie type added";
+                _notifyService.Success($"{zombieType.TypeName} zombie type added"); //TOASTNOTIFICATION
                 return this.RedirectToAction("Index");
             }
 
@@ -79,7 +83,7 @@ namespace ZombieParty.Controllers
             {
                 _baseDonnees.ZombieTypes.Update(zombieType);
                await _baseDonnees.SaveChangesAsync();
-                TempData["Success"] = $"ZombieType {zombieType.TypeName} has been modified";
+                _notifyService.Success($"{zombieType.TypeName} zombie type modified"); //TOASTNOTIFICATION
                 return this.RedirectToAction("Index");
             }
 
@@ -109,7 +113,8 @@ namespace ZombieParty.Controllers
 
             _baseDonnees.ZombieTypes.Remove(zombieType);
              await _baseDonnees.SaveChangesAsync();
-            TempData["Success"] = $"ZombieType {zombieType.TypeName} has been removed";
+            _notifyService.Success($"{zombieType.TypeName} zombie type has been removed"); //TOASTNOTIFICATION
+
             return RedirectToAction("Index");
         }
     }
